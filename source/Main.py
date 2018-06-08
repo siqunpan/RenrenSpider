@@ -23,6 +23,7 @@ from RepoMysql import RepoMysql
 import datetime
 import CommonFunction
 import Config
+import PrivateConfig
 
 def CreatePaths(ownerID):
     CommonFunction.CreatePath(Config.DATAPATH)
@@ -38,20 +39,20 @@ def Main():
     userID = baobao.getUserID()
 
     CreatePaths(userID)  #userID of url opened
-    CreatePaths(ownerID = Config.OwnerID)  #userID of your own
+    CreatePaths(ownerID = PrivateConfig.OwnerID)  #userID of your own
     
-    print ('userID and ownerID: ', userID, ', ', Config.OwnerID)
+    print ('userID and ownerID: ', userID, ', ', PrivateConfig.OwnerID)
 
-    #albumManager = AlbumManager(baobao, userID, Config.OwnerID)
+    #albumManager = AlbumManager(baobao, userID, PrivateConfig.OwnerID)
     #albumManager.work()
 
-    #blogManager = BlogManager(baobao, userID, Config.OwnerID)
+    #blogManager = BlogManager(baobao, userID, PrivateConfig.OwnerID)
     #blogManager.work()
 
-    #status = Status(baobao, userID, Config.OwnerID)
+    #status = Status(baobao, userID, PrivateConfig.OwnerID)
     #status.work()
 
-    #gossip = Gossip(baobao, userID, Config.OwnerID)
+    #gossip = Gossip(baobao, userID, PrivateConfig.OwnerID)
     #gossip.work()
 
     repo = RepoMysql(baobao, userID)

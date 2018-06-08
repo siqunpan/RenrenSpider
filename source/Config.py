@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
 
-Email = 'EnterYourOwn'
-Password = 'EnterYourOwn'
-OwnerID = 'EnterYourOwn'
-
-CookieFile = 'cookie.txt'
+'''
+    #为了防止敏感信息被上传到github，因此个人信息改为写到ignorelist中的PrivateConfig.py
+    Email = 'EnterYourOwn'
+    Password = 'EnterYourOwn'
+    OwnerID = 'EnterYourOwn'
+    CookieFile = 'cookie.txt'
+'''
 
 DATAPATH = 'data'
 BLOGPATH = 'blogs'
