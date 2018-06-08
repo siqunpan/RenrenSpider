@@ -8,6 +8,18 @@
     CookieFile = 'cookie.txt'
 '''
 
+DBFile = '/tmp/people.txt'
+DBName = 'renren'
+
+#这些是建立数据库连接的时候的设置，其中注意密码passwd
+DBConnectInfo = {
+                   'host':'localhost',
+                   'user':'root',
+                   'passwd':'root',
+#                    'db': 'renren',  #在RepoMysql.py中通过useDbSql指令设置了。直接通过这里设置也可以
+#                    'charset':'utf8'  #在RepoMysql.py中通过set_character_set指令设置了。直接通过这里设置也可以
+                }
+
 DATAPATH = 'data'
 BLOGPATH = 'blogs'
 ALBUMLISTPATH = 'albumlist'
@@ -64,10 +76,17 @@ BLOGURL = r'http://blog.renren.com/blog/%s/%s?bfrom=01020110200'
 #注意这个包是post类型，不是get
 GOSSIPURL = r'http://gossip.renren.com/ajaxgossiplist.do'
 
-CONVERSATIONRUL = r'http://gossip.renren.com/getconversation.do'
-
 #聊天URL获得：getChatList?
 CHATURL = r'http://webpager.renren.com/api/getChatList'
+
+#个人信息页面，在进入该页面之后，刷新一下，然后在network中可以找到叫profile?v=info_timeline的条目，
+#这个Request URL就是我们需要的
+PERSONALINFOURL = r'http://www.renren.com/%s/profile?v=info_timeline'
+
+#在短时间内连续查看了100个人的页面之后会弹出验证页面，可能是为了防止爬虫
+#获得方式：在打开一个url之后，对返回的内容对象调用geturl()方法获得返回的url，然后对比这两url，如果不一样则说明
+#返回的url可能是输入验证码页面，此时打印出这个url就得到这个url了，如果不是输入验证码页面，则说明是异常
+VALIDATEURL = r'http://www.renren.com/validateuser.do'
 
 # FailCode via "login-v6.js"
 FAILCODE = {

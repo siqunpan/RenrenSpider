@@ -1,0 +1,99 @@
+# -*- coding: utf-8 -*-
+
+import urllib
+import Config
+
+from bs4 import BeautifulSoup
+
+class PersonalInfo:
+    
+    def __init__(self, spider, userID, ownerID, summary=None):
+        self.personalInfoURL =  Config.PERSONALINFOURL % ownerID
+        self.spider = spider
+        self.userID = userID
+        self.ownerID = ownerID
+        self.summary = summary
+
+    def getContent(self, info)
+        return self.soup.find('div', class_ = 'info-section clearfix', id = info)
+
+    def getEduInfo(self, info):
+        edu = ''
+        if self.getContent(info) == None:
+            return edu
+        for item in self.getContent(info).find_all('dl', class_ = 'info'):
+            #strip()当参数为空时（即括号里没东西），默认删除空白符（包括'\n', '\r', '\t', ' ')，
+            #但是只能删除开头和结尾的，不能删除字符串中间的
+            edu += item.find('dt').string + ':(' + item.find('dd').get_text().strip().replace('\n', '') + ') '
+        return edu
+
+    def getBasicInfo(self, info):
+        gender, birth, hometown = '', '', ''
+        if self.getContent(info) == None:
+            return (gender, birth, hometown)
+        for item in self.getContent(info).find_all('dl',class_='info'):
+            if item.find('dt').string == u'性别':
+                if item.find('dd').get_text().strip() == u'男':
+                    gender = 'm'
+                elif item.find('dd').get_text().strip() == u'女':
+                    gender = 'f'
+                else:
+                    gender = 'u'
+            elif item.find('dt').string == u'生日':
+                birth = item.find('dd').get_text().strip().replace('\n','')
+            elif item.find('dt').string == u'家乡':
+                hometown = item.find('dd').get_text().strip().replace('\n','')       
+        return (gender, birth, hometown)
+
+    def getInfo(self, content):
+        self.soup = BeautifulSoup(content)
+        edu = self.getEduInfo('educationInfo')
+        gender, birth, hometown = self.getBasicInfo('basicInfo')
+        id = self.ownerID
+        if self.userID == self.ownerID:
+            relation = 'myself'
+            name,belong,group,comf = '','','',''
+        else:
+            relation = 'friend'
+            name = self.summary['fname']
+            belong = self.summary['belong']
+            group = self.summary['group']
+            comf = self.summary['comf']
+        return (id,name,relation,gender,birth,hometown,belong,group,edu,comf)  
+
+    def optionalValidate(self,content):
+        soup = BeautifulSoup(content)
+        for item in soup.find_all('div',class_='optional'):
+            #抓取img中属性为src的信息,例如<img src="123456" xxxxxxxxxxxxxxxx,则输出为123456
+            #beautifulsoup处理之后支持这种取值方式
+            src = item.img['src']
+            validateCode = self.spider.getContent(src)
+            with open('icode.jpg', 'wb') as f:
+                f.write(validateCode)
+            icode = input('please input the validation code shown sin icode.jpg: ')
+            data = {
+                    'id' : self.ownerID,
+                    'submit' : u'继续浏览'.encode('utf-8'),  #renren网使用utf-8编码格式
+                    'icode' : icode
+                    }
+            self.spider.getContent(Config.VALIDATEURL, urllib.parse.urlencode(data).encode('utf-8'))
+            break
+
+    def work(self)
+        while True:
+            page = self.spider.getRawContent(self.personalInfoURL)
+            url = page.geturl()
+            content = page.read()
+
+            #对比返回页面的url是否和打开该页面的request url相同，不同则说明进入了输入验证码验证的页面
+            if url != self.personalInfoURL:
+                if 'validateuser.do' in url:
+                    self.optionalValidate(content)
+                    continue
+                else:
+                    print ('Error: unknown error')
+                    return
+            else:
+                break
+        return self.getInfo(content)
+
