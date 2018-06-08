@@ -1,0 +1,54 @@
+# -*- coding: utf-8 -*-
+import os
+import json
+import re
+
+def CreatePath(path): 
+    if not os.path.exists(path): 
+            os.mkdir(path)
+
+def IsPathExist(path):
+    return os.path.exists(path)
+
+'''
+json.loads 用于解码 JSON 数据。该函数返回 Python 字段的数据类型。
+当我们用requests请求一个返回json的接口时候，得到的结果中包含了一串让人看
+不懂的东西 \\uxxxx的，这是中文对应的unicode编码形式。json.loads()就可以把他们转化为中文
+'''
+def generateJson(rawContent):
+    '''
+        获得数据部分内容，通过观察chrome开发者工具element中的html知道，
+        第一个'{'和'};'中的内容就是完整的数据
+    '''
+    content = rawContent[rawContent.find('{') : rawContent.find('};')+1]  #不包括上界，因此要+1
+    '''
+        过观察chrome开发者工具element中的html知道，人人网解析出来的content中
+        并不是严格使用双引号，所以需要将出现的单引号替换为双引号。
+        但是用replace替换的话有一个地方会对结果造成干扰
+        （见下，单引号全部替换后，由于http后面有“:”，会使得json报错）
+        所以用单引号之前有没有“=”来判断是否需要转换，具体步骤见如下循环
+        "title":"<img src='http://a.xnimg.cn/imgpro/icons/statusface/zongzi.gif' alt='测试'  />测试用例测试用例\n"
+        content = content.replace("'",'"')
+    '''
+    newContent = ''
+    i = -1
+    for j in range(0, len(content)):
+        if i == -1:
+            if content[j] != "'":
+                newContent += content[j]
+            else:
+                i = j;
+        else:
+            if content[j] == "'":
+                if i-1 >= 0 and content[i-1] == '=':
+                    newContent += content[i:j+1]
+                else:
+                    newContent += '"' + content[i+1:j] + '"'
+                i = -1
+    return json.loads(newContent)	#json.loads()用于将str类型的数据转成dictionary
+
+def validateFilename(rawName):
+    "替换不能用在文件路径中的非法字符"
+    illegalStr = r"[\:|]"    #python中文件路径中的非法字符 '/ \ : * ? " < > |'
+    legalName = re.sub(illegalStr, "_", rawName)    #将非法字符替换为下划线
+    return legalName
