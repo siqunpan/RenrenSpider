@@ -25,6 +25,14 @@ BLOGPATH = 'blogs'
 ALBUMLISTPATH = 'albumlist'
 
 '''
+***********************
+看URL返回内容从而确定可以通过那些标签获取所需数据的方法：
+    1 直接将URL输入进浏览器看返回页面，比如http://friend.renren.com/groupsdata
+    2 一些URL是程序提供数据组合而成，则通过在程序中print()函数打印open()这个url之后的返回内容获得
+***********************
+'''
+
+'''
 下面两个登陆的URL都适用：F12开启google开发者工具(勾选 preserve log选项)
   1 在人人网登陆界面，在Elements页面能找到http://www.renren.com/PLogin.do这个链接
   2 人人网登陆之后进入首页，在Network页面可以找到login？开头的post条目，里面可以
@@ -82,6 +90,10 @@ CHATURL = r'http://webpager.renren.com/api/getChatList'
 #个人信息页面，在进入该页面之后，刷新一下，然后在network中可以找到叫profile?v=info_timeline的条目，
 #这个Request URL就是我们需要的
 PERSONALINFOURL = r'http://www.renren.com/%s/profile?v=info_timeline'
+
+#所有好友信息URL：打开好友页面，在google开发者工具的network页面中groupsdata数据包里的Request URL
+#注意还有一个叫managefriends的数据包，这个不是我们要的，因为返回页面数据里没有所有好友的全部信息，只有部分简略信息
+FRIENDLISTURL = r'http://friend.renren.com/groupsdata'
 
 #在短时间内连续查看了100个人的页面之后会弹出验证页面，可能是为了防止爬虫
 #获得方式：在打开一个url之后，对返回的内容对象调用geturl()方法获得返回的url，然后对比这两url，如果不一样则说明
