@@ -74,7 +74,7 @@ class RenrenSpider:
             validation = self.opener.open(Config.ICODEURL).read()
             with open('icode.jpg', 'wb') as file:
                 file.write(validation)
-            icode = input('Please input the validation code shown sin icode.jpg: ')
+            icode = input('Please input the validation code shown in icode.jpg: ')
             data['icode'] = icode
             
             #create a request, then open the url

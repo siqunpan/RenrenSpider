@@ -12,7 +12,12 @@ from PersonalInfo import PersonalInfo
 from FriendList import FriendList
 
 #所需数据库命令
-createDbSql = 'create database if not exists %s DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci'
+'''
+    cursors.py:170: Warning: (3719, "'utf8' is currently an alias for the character set UTF8MB3, 
+      which will be replaced by UTF8MB4 in a future release. Please consider using UTF8MB4 in order 
+    to be unambiguous.")
+'''
+createDbSql = 'create database if not exists %s DEFAULT CHARACTER SET UTF8MB4 COLLATE utf8mb4_general_ci'
 useDbSql = 'use %s'
 createSql = 'create table people(\
                 id char(9) not null,\
@@ -22,12 +27,12 @@ createSql = 'create table people(\
                 birth varchar(20),\
                 hometown varchar(20),\
                 belong varchar(20),\
-                circle varchar(20),\
+                firstGroup varchar(20),\
                 edu varchar(200),\
                 comf varchar(4),\
                 primary key (id))'
 insertSql = 'insert into people \
-            (id,name,relation,gender,birth,hometown,belong,circle,edu,comf) values \
+            (id,name,relation,gender,birth,hometown,belong,firstGroup,edu,comf) values \
             ("%s","%s","%s","%s","%s","%s","%s","%s","%s","%s")'
 outputSql = 'select * from people into outfile "%s"' % Config.DBFile
 
@@ -54,10 +59,12 @@ class RepoMysql:
 
             '''
                 下面useDbSql和set_character_set要么在这里设置，要么在config的dbConnectInfo中添加
+                注意：由于报错'Connection' object has no attribute 'set_character_set'
+                     因此不能用下面的方式了，必须要在config的dbConnectInfo中添加
             '''
             #通告MySQL把Config.DBName数据库作为默认（当前）数据库使用，用于后续语句
-            self.cursor.execute(useDbSql % Config.DBName)
-            self.connect.set_character_set('utf8')
+            #self.cursor.execute(useDbSql % Config.DBName)
+            #self.connect.set_character_set('UTF8MB4')
 
             #创建数据库表
             self.cursor.execute(createSql)
@@ -109,11 +116,19 @@ class RepoMysql:
             if i % 100 == 0:
                 print ('Already collect %d/%d people info, time: ' % (i, count), datetime.datetime.now())
             i += 1
+
+            if i == 10:
+                break
+
         endDatetime = datetime.datetime.now()
         print ('Collect all people info successfully, time: ', endDatetime - beginDatetime)
 
-    def work():
+    def work(self):
+        print ('1111111111111111111111111111')
         self.createDB()  #建立数据库以及用表
+        print ('2222222222222222222222222222')
         self.collectInfo()  #收集自己以及所有好友信息
+        print ('3333333333333333333333333333')        
         self.insertDB()  #将收集到的信息写入数据库
+        print ('4444444444444444444444444444')
         self.outputDB()   #输出数据库信息到指定文件

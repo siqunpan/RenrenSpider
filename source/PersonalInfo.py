@@ -14,7 +14,7 @@ class PersonalInfo:
         self.ownerID = ownerID
         self.summary = summary
 
-    def getContent(self, info)
+    def getContent(self, info):
         return self.soup.find('div', class_ = 'info-section clearfix', id = info)
 
     def getEduInfo(self, info):
@@ -52,14 +52,14 @@ class PersonalInfo:
         id = self.ownerID
         if self.userID == self.ownerID:
             relation = 'myself'
-            name,belong,group,comf = '','','',''
+            name,belong,firstGroup,comf = '','','',''
         else:
             relation = 'friend'
             name = self.summary['fname']
             belong = self.summary['belong']
-            group = self.summary['group']
+            firstGroup = self.summary['firstGroup']
             comf = self.summary['comf']
-        return (id,name,relation,gender,birth,hometown,belong,group,edu,comf)  
+        return (id,name,relation,gender,birth,hometown,belong,firstGroup,edu,comf)  
 
     def optionalValidate(self,content):
         soup = BeautifulSoup(content)
@@ -79,7 +79,7 @@ class PersonalInfo:
             self.spider.getContent(Config.VALIDATEURL, urllib.parse.urlencode(data).encode('utf-8'))
             break
 
-    def work(self)
+    def work(self):
         while True:
             page = self.spider.getRawContent(self.personalInfoURL)
             url = page.geturl()

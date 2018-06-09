@@ -16,8 +16,8 @@ DBConnectInfo = {
                    'host':'localhost',
                    'user':'root',
                    'passwd':'root',
-#                    'db': 'renren',  #在RepoMysql.py中通过useDbSql指令设置了。直接通过这里设置也可以
-#                    'charset':'utf8'  #在RepoMysql.py中通过set_character_set指令设置了。直接通过这里设置也可以
+                   'db': 'renren',      #在RepoMysql.py中通过useDbSql指令设置也可以
+                   'charset':'UTF8MB4'  #在RepoMysql.py中通过set_character_set指令设置也可以
                 }
 
 DATAPATH = 'data'
