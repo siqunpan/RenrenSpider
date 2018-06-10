@@ -5,11 +5,13 @@
     Email = 'EnterYourOwn'
     Password = 'EnterYourOwn'
     OwnerID = 'EnterYourOwn'
-    CookieFile = 'cookie.txt'
+
 '''
 
-DBFile = '/tmp/people.txt'
+CookieFile = 'cookie.txt'
+DBFile = 'people.txt'
 DBName = 'renren'
+DBTableName = 'people'
 
 #这些是建立数据库连接的时候的设置，其中注意密码passwd
 DBConnectInfo = {
@@ -17,7 +19,7 @@ DBConnectInfo = {
                    'user':'root',
                    'passwd':'root',
                    'db': 'renren',      #在RepoMysql.py中通过useDbSql指令设置也可以
-                   'charset':'UTF8MB4'  #在RepoMysql.py中通过set_character_set指令设置也可以
+                   'charset':'utf8'  #在RepoMysql.py中通过set_character_set指令设置也可以
                 }
 
 DATAPATH = 'data'

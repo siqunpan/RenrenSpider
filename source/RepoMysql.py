@@ -2,6 +2,9 @@
 
 import Config
 import datetime
+import CommonFunction
+import re
+import shutil
 
 #MySQLdb和pymysql都是数据库的操作模块，其中pymysql支持python3.x， 而MySQLdb不支持3.x版本
 #import MySQLdb 
@@ -17,9 +20,11 @@ from FriendList import FriendList
       which will be replaced by UTF8MB4 in a future release. Please consider using UTF8MB4 in order 
     to be unambiguous.")
 '''
-createDbSql = 'create database if not exists %s DEFAULT CHARACTER SET UTF8MB4 COLLATE utf8mb4_general_ci'
+createDbSql = 'create database if not exists %s DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci'
+
 useDbSql = 'use %s'
-createSql = 'create table people(\
+
+createSql = 'create table %s(\
                 id char(9) not null,\
                 name varchar(15),\
                 relation char(6),\
@@ -31,10 +36,16 @@ createSql = 'create table people(\
                 edu varchar(200),\
                 comf varchar(4),\
                 primary key (id))'
+
 insertSql = 'insert into people \
             (id,name,relation,gender,birth,hometown,belong,firstGroup,edu,comf) values \
             ("%s","%s","%s","%s","%s","%s","%s","%s","%s","%s")'
-outputSql = 'select * from people into outfile "%s"' % Config.DBFile
+
+outputSql = 'select * from %s into outfile "%s"'
+
+showOutputFilePathSql = 'show variables like \'secure_file_priv\''
+
+dropDatabaseSql = 'drop database %s'
 
 class RepoMysql:
 
@@ -52,6 +63,20 @@ class RepoMysql:
         self.cursor.close()
         self.connect.close() 
 
+    def dropDB(self):
+        try:
+            #删除数据库表
+            self.cursor.execute(dropDatabaseSql % Config.DBName)
+            #提交数据库操作
+            self.connect.commit()
+
+        except Exception as e:
+            print (e)
+            #回滚当前事务
+            self.connect.rollback() 
+        else:
+            print('Drop database successfully')   
+
     def createDB(self):
         try:
             #建立数据库
@@ -63,11 +88,11 @@ class RepoMysql:
                      因此不能用下面的方式了，必须要在config的dbConnectInfo中添加
             '''
             #通告MySQL把Config.DBName数据库作为默认（当前）数据库使用，用于后续语句
-            #self.cursor.execute(useDbSql % Config.DBName)
-            #self.connect.set_character_set('UTF8MB4')
+            self.cursor.execute(useDbSql % Config.DBName)
+            #self.connect.set_character_set('utf8')
 
             #创建数据库表
-            self.cursor.execute(createSql)
+            self.cursor.execute(createSql % Config.DBTableName)
             #提交数据库操作
             self.connect.commit()
 
@@ -91,8 +116,23 @@ class RepoMysql:
 
     def outputDB(self):
         try:
-            self.cursor.execute(outputSql)
+            #获取MySQL规定默认输出文件路径，由于结果集是是tuple,所以可以像数组一样使用结果集获取数据
+            setCount = self.cursor.execute(showOutputFilePathSql)
+            rows = self.cursor.fetchall()
+            outputFilePath = rows[0][1]
+
+            #将'\'换为'/'，以满足python路径格式
+            pattern = r'\\'
+            outputFilePath = re.sub(pattern, r'/', outputFilePath)
+            outputFilePath = outputFilePath + Config.DBName + '/' + Config.DBFile
+
+            #先输出查询数据到MySQL指定路径
+            self.cursor.execute(outputSql % (Config.DBTableName, Config.DBFile))
             self.connect.commit()
+
+            #最后将指定路径下的输出文件移动到工程目录下
+            shutil.move(outputFilePath, Config.DBFile)
+
         except Exception as e:
             print (e)
             #回滚当前事务
@@ -117,13 +157,14 @@ class RepoMysql:
                 print ('Already collect %d/%d people info, time: ' % (i, count), datetime.datetime.now())
             i += 1
 
-            if i == 10:
+            if i == 5:
                 break
 
         endDatetime = datetime.datetime.now()
         print ('Collect all people info successfully, time: ', endDatetime - beginDatetime)
 
     def work(self):
+        self.dropDB()
         print ('1111111111111111111111111111')
         self.createDB()  #建立数据库以及用表
         print ('2222222222222222222222222222')

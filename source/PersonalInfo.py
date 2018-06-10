@@ -51,8 +51,11 @@ class PersonalInfo:
         gender, birth, hometown = self.getBasicInfo('basicInfo')
         id = self.ownerID
         if self.userID == self.ownerID:
+
+            #获得自己的名字
+            myName = self.soup.find('a', class_ = 'hd-name').get_text()
             relation = 'myself'
-            name,belong,firstGroup,comf = '','','',''
+            name,belong,firstGroup,comf = myName,'','',''
         else:
             relation = 'friend'
             name = self.summary['fname']

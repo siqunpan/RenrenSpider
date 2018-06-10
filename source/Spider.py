@@ -25,8 +25,8 @@ class RenrenSpider:
             ignore_discard: save even cookies set to be discarded. 
             ignore_expires: save even cookies that have expiredThe file is overwritten if it already exists
         '''
-        if CommonFunction.IsPathExist(PrivateConfig.CookieFile):
-            self.cookie.load(PrivateConfig.CookieFile, ignore_discard=True, ignore_expires=True)
+        if CommonFunction.IsPathExist(Config.CookieFile):
+            self.cookie.load(Config.CookieFile, ignore_discard=True, ignore_expires=True)
 
         #create cookie processor, build a opener and then set this opener the default opener 
         self.opener   = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(self.cookie))
@@ -89,7 +89,7 @@ class RenrenSpider:
                     if item.name == 'id':
                         self.userID = item.value
                         print ('Login Successfully')
-                        self.cookie.save(PrivateConfig.CookieFile, ignore_discard=True, ignore_expires=True)
+                        self.cookie.save(Config.CookieFile, ignore_discard=True, ignore_expires=True)
                         isLogin = True
                         break
             else:
