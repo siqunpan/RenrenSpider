@@ -88,7 +88,7 @@ BLOGURL = r'http://blog.renren.com/blog/%s/%s?bfrom=01020110200'
 #注意这个包是post类型，不是get
 GOSSIPURL = r'http://gossip.renren.com/ajaxgossiplist.do'
 
-#聊天URL获得：getChatList?
+#聊天URL获得：在人人网主界面的聊天区域，打开任一人的聊天窗口在network中都会抓到名字以getChatList?开头的数据包
 CHATURL = r'http://webpager.renren.com/api/getChatList'
 
 #个人信息页面，在进入该页面之后，刷新一下，然后在network中可以找到叫profile?v=info_timeline的条目，
@@ -98,6 +98,10 @@ PERSONALINFOURL = r'http://www.renren.com/%s/profile?v=info_timeline'
 #所有好友信息URL：打开好友页面，在google开发者工具的network页面中groupsdata数据包里的Request URL
 #注意还有一个叫managefriends的数据包，这个不是我们要的，因为返回页面数据里没有所有好友的全部信息，只有部分简略信息
 FRIENDLISTURL = r'http://friend.renren.com/groupsdata'
+
+#新版人人网好友URL：获取方法为点击人人网主页右上角好友按钮，然后下拉好友菜单就能在network中捕捉到了
+#这个URL在程序里只用来获得每个好友的聊天信息，而不是获得详细好友信息
+FRIENDLISTURLNEW = r'http://webpager.renren.com/api/getFriendsInfo'
 
 #在短时间内连续查看了100个人的页面之后会弹出验证页面，可能是为了防止爬虫
 #获得方式：在打开一个url之后，对返回的内容对象调用geturl()方法获得返回的url，然后对比这两url，如果不一样则说明

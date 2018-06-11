@@ -18,6 +18,7 @@ from AlbumManager import AlbumManager
 from Status import Status
 from BlogManager import BlogManager
 from Gossip import Gossip
+from ChatManager import ChatManager
 from RepoMysql import RepoMysql
 
 import datetime
@@ -55,8 +56,11 @@ def Main():
     #gossip = Gossip(baobao, userID, PrivateConfig.OwnerID)
     #gossip.work()
 
-    repo = RepoMysql(baobao, userID)
-    repo.work()
+    chatManager = ChatManager(baobao, userID, PrivateConfig.OwnerID)
+    chatManager.work()
+
+    #repo = RepoMysql(baobao, userID)
+    #repo.work()
 
     endDatetime = datetime.datetime.now()
     print('All info of renren.com have been downloaded with time: ', endDatetime - beginDateTime)
