@@ -158,15 +158,12 @@ class RepoMysql:
             if i % 100 == 0:
                 print ('Already collect %d/%d people info, time: ' % (i, count), datetime.datetime.now())
             i += 1
-
-            if i == 6:
-                break
-
         endDatetime = datetime.datetime.now()
         print ('Collect all people info successfully, time: ', endDatetime - beginDatetime)
 
     def work(self):
-        self.dropDB()
+        self.dropDB()   #即使使用了 create database if not exists，但是仍然会报错 database ‘renren’ already exists
+                            #的错误，所以先删除数据库再建立
         self.createDB()  #建立数据库以及用表
         self.collectInfo()  #收集自己以及所有好友信息      
         self.insertDB()  #将收集到的信息写入数据库
