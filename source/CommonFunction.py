@@ -48,6 +48,7 @@ def generateJson(rawContent):
                 i = -1
     return json.loads(newContent)	#json.loads()用于将str类型的数据转成dictionary
 
+
 def validateFilename(rawName):
     "替换不能用在文件路径中的非法字符"
     illegalStr = r"[\:|]"    #python中文件路径中的非法字符 '/ \ : * ? " < > |'
@@ -55,7 +56,7 @@ def validateFilename(rawName):
     return legalName
 
 def timestampToLocaltime(timestamp):
-    #时间戳转换成localtime
+    "时间戳转换成localtime"
     timeLocal = time.localtime(timestamp)
     #转换成新的时间格式(2016-05-05 20:28:54)
     datetime = time.strftime("%Y-%m-%d %H:%M:%S",timeLocal)

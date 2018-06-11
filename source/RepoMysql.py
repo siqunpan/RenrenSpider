@@ -49,13 +49,14 @@ dropDatabaseSql = 'drop database %s'
 
 class RepoMysql:
 
-    def __init__(self, spider, userID):
+    def __init__(self, spider, userID, ownerID):
         #建立数据库连接对象
         self.connect = pymysql.connect(**Config.DBConnectInfo)
         #建立数据库交互对象
         self.cursor = self.connect.cursor()
         self.spider = spider
         self.userID = userID
+        self.ownerID = ownerID
         self.peopleList = []
 
     def __del__(self):

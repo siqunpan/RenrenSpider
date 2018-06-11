@@ -62,7 +62,7 @@ def Main():
     chatManager.work()
 
     #自己以及所有好友的信息，出现存储到mysql数据库中，再存储到本地
-    repo = RepoMysql(baobao, userID)
+    repo = RepoMysql(baobao, userID, PrivateConfig.OwnerID)
     repo.work()
 
     endDatetime = datetime.datetime.now()

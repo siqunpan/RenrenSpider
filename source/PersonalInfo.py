@@ -73,7 +73,7 @@ class PersonalInfo:
             validateCode = self.spider.getContent(src)
             with open('icode.jpg', 'wb') as f:
                 f.write(validateCode)
-            icode = input('please input the validation code shown sin icode.jpg: ')
+            icode = input('please input the validation code shown in icode.jpg: ')
             data = {
                     'id' : self.ownerID,
                     'submit' : u'继续浏览'.encode('utf-8'),  #renren网使用utf-8编码格式

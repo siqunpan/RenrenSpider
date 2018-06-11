@@ -47,22 +47,23 @@ class Photos:
         for item in self.photos:
             filename = self.path + '/' + str(item['id']) + '.jpg'
             count = 0
-            with open(filename, 'wb') as f:
-                while True:
-                    try:
-                        opener = urllib.request.build_opener()  #构建简单的opener
-                        #Spider.py中还有另外一中设置header内容的写法
-                        opener.addheaders = [('User-Agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.181 Safari/537.36')]
-                        urllib.request.install_opener(opener)
-                        urllib.request.urlretrieve(item['url'], filename)  #将照片从远程数据下载到本地
-                    except Exception as e:
-                        print (item['id'], 'fail + 1', e)
-                        count += 1
-                    else:
-                        count = 0
-                        break
-                #评论comment可以用类似方式，就是通过url获得content之后，解吗json数据，但是照片不行
-                #f.write(self.spider.getContent(item['url']))   
+            if CommonFunction.IsPathExist(filename) == False:  #如果该照片已经存在则不创建，为了节省程序运行时间
+                with open(filename, 'wb') as f:
+                    while True:
+                        try:
+                            opener = urllib.request.build_opener()  #构建简单的opener
+                            #Spider.py中还有另外一中设置header内容的写法
+                            opener.addheaders = [('User-Agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.181 Safari/537.36')]
+                            urllib.request.install_opener(opener)
+                            urllib.request.urlretrieve(item['url'], filename)  #将照片从远程数据下载到本地
+                        except Exception as e:
+                            print (item['id'], 'fail + 1', e)
+                            count += 1
+                        else:
+                            count = 0
+                            break
+                    #评论comment可以用类似方式，就是通过url获得content之后，解吗json数据，但是照片不行
+                    #f.write(self.spider.getContent(item['url']))   
     def savePhotoComment(self):
         with open(self.path + '/photo_detail.markdown', 'wb') as f:
             for item in self.photos:
