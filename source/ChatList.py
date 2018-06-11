@@ -4,7 +4,7 @@ import urllib
 import json
 import Config
 
-class Chat:
+class ChatList:
 
     def __init__(self, spider, summary):
         self.chatUrl = Config.CHATURL
@@ -25,7 +25,6 @@ class Chat:
     def setChatListContent(self, content):
         #print ('*********content of chatlist content: ', content)
         dictInfo = json.loads(content)
-        print ('*********content of chatlist content: ', content)
         for item in dictInfo['data']['items']:
             info = {}
             info['content'] = item['content']
@@ -35,6 +34,8 @@ class Chat:
 
             self.chatList.append(info)
         if len(dictInfo['data']['items']) > 0:
+            # print ('*************friendUid, friendName: ', self.friendUid, self.friendName)
+            # print ('*************content of chatlist content: ', dictInfo)
             return True
         else:
             return False       
@@ -49,4 +50,6 @@ class Chat:
             i += 1
             if result == False:
                 break
+        return self.chatList
+
 

@@ -13,6 +13,7 @@ class Gossip:
         self.ownerID = ownerID
         self.gossipCount = 0
         self.gossipContent = []
+        self.gossipFilePath = Config.DATAPATH + '/' + self.ownerID + '/' + Config.GossipFile
 
     def setGossipCount(self, content):
         dictInfo = json.loads(content)
@@ -50,7 +51,7 @@ class Gossip:
             self.gossipContent.append(info)
     
     def saveContent(self):
-        with open(Config.DATAPATH + '/' + self.ownerID + '/gossip.markdown', 'wb') as f:
+        with open(self.gossipFilePath, 'wb') as f:
             str1 = 'Quantity of gossips: ' + str(self.gossipCount) + '\n'
             f.write(str1.encode('utf-8'))
             f.write(Config.GAP.encode('utf-8'))

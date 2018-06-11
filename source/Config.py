@@ -9,7 +9,9 @@
 '''
 
 CookieFile = 'cookie.txt'
-DBFile = 'people.txt'
+GossipFile = 'gossip.markdown'
+ChatFile = 'chat.markdown'
+DBFile = 'people.markdown'
 DBName = 'renren'
 DBTableName = 'people'
 

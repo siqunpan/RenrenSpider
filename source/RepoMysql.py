@@ -132,8 +132,9 @@ class RepoMysql:
             self.cursor.execute(outputSql % (Config.DBTableName, Config.DBFile))
             self.connect.commit()
 
+            destPath = Config.DATAPATH + '/' + self.ownerID + '/' + Config.DBFile
             #最后将指定路径下的输出文件移动到工程目录下
-            shutil.move(outputFilePath, Config.DBFile)
+            shutil.move(outputFilePath, destPath)
 
         except Exception as e:
             print (e)
