@@ -31,7 +31,7 @@ class ChatManager:
         self.friendsCount = dictInfo['data']['total']
         for item in dictInfo['data']['items']:
             info = {}
-            info['uid'] = int(item['uid'])
+            info['uid'] = str(item['uid'])
             info['name'] = item['name']
             self.friendSimpleInfoList.append(info)
         if len(dictInfo['data']['items']) > 0:
@@ -41,12 +41,13 @@ class ChatManager:
 
     def setAllChatListsContent(self):
         for item in self.friendSimpleInfoList:
-            chatListItem = {}
-            chatListItem['friendInfo'] = item
             chatList = ChatList(self.spider, item)
-            chatListItem['chatList'] = chatList.work()
-
-            self.allChatLists.append(chatListItem)
+            chatListInfo = chatList.work()
+            if len(chatListInfo) > 0:
+                chatListItem = {}
+                chatListItem['friendInfo'] = item
+                chatListItem['chatList'] = chatListInfo
+                self.allChatLists.append(chatListItem)
         print ('Set all chatlists content successfully')
 
     def saveAllChatListsContent(self):
@@ -55,19 +56,21 @@ class ChatManager:
                 friendInfo = item['friendInfo']
                 chatList = item['chatList']
 
-                line = '*** : ' + friendInfo['name'] + '(' + friendInfo['uid'] + ')' + '*****************' + '\n\n'
-                line += Config.GAP
+                line  = '------------------------ '
+                line += friendInfo['name'] + '(' + friendInfo['uid'] + ')'
+                line += ' ------------------------' + '\n\n'
                 f.write(line.encode('utf-8'))
+
                 for itemChat in chatList:
-                    lineChat  = '*** ' + itemChat['time'] + ' ***' + '\n\n'
-                    lineChat += '*** ' + itemChat['fromName'] + '(' + itemChat['fromId'] + ')' + ': ' + '\n\n'
-                    lineChat += itemChat['content'] + '\n\n'
+                    lineChat  = '--- ' + itemChat['time'] + ' ---' + '\n\n'
+                    lineChat += itemChat['fromName'] + '(' + itemChat['fromId'] + ')' + ': ' + '\n\n'
+                    lineChat += '    ' + itemChat['content'] + '\n\n'
                     f.write(lineChat.encode('utf-8'))
+
             print ('Save all chatLists content successfully')
 
 
     def work(self):
-        print ('111111111111111111111')	
         i = 0
         showNumEachPage = 50  #当前页显示多少个好友信息
         while True:
@@ -75,12 +78,8 @@ class ChatManager:
             lt = showNumEachPage  #页面显示好友信息数量，比如st是100，it是20，则从101开始显示到121号好友，如果总数不足则显示到最后
             result = self.setFriendSimpleInfoContent(self.spider.getContent(self.getFriendListForChatURL(st, lt)))
             i += 1
-            if i == 20:
-                break
             if result == False:
                 break
-        print ('2222222222222222222222222')	
-        self.setAllChatListsContent()
-        print ('3333333333333333333333333')	
-        self.saveAllChatListsContent()	
+        self.setAllChatListsContent()  #读取和所有好友的聊天信息，并存储到列表中
+        self.saveAllChatListsContent()	#将聊天信息保存到本地
 

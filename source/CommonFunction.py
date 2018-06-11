@@ -2,6 +2,7 @@
 import os
 import json
 import re
+import time
 
 def CreatePath(path): 
     if not os.path.exists(path): 
@@ -52,3 +53,10 @@ def validateFilename(rawName):
     illegalStr = r"[\:|]"    #python中文件路径中的非法字符 '/ \ : * ? " < > |'
     legalName = re.sub(illegalStr, "_", rawName)    #将非法字符替换为下划线
     return legalName
+
+def timestampToLocaltime(timestamp):
+    #时间戳转换成localtime
+    timeLocal = time.localtime(timestamp)
+    #转换成新的时间格式(2016-05-05 20:28:54)
+    datetime = time.strftime("%Y-%m-%d %H:%M:%S",timeLocal)
+    return datetime

@@ -3,6 +3,7 @@
 import urllib
 import json
 import Config
+import CommonFunction
 
 class ChatList:
 
@@ -28,14 +29,16 @@ class ChatList:
         for item in dictInfo['data']['items']:
             info = {}
             info['content'] = item['content']
-            info['fromId'] = item['fromId']
+            info['fromId'] = str(item['fromId'])
             info['fromName'] = item['fromName']
-            info['time'] = item['time']
+            datetime = CommonFunction.timestampToLocaltime(item['time'])  #将时间戳转化为本地时间
+            info['time'] = datetime
+
+            # print ('*************item[\'fromId\'], item[\'fromName\']: ', item['fromId'], item['fromName'])
+            # print ('*************item[\'content\']: ', item['content'])
 
             self.chatList.append(info)
         if len(dictInfo['data']['items']) > 0:
-            # print ('*************friendUid, friendName: ', self.friendUid, self.friendName)
-            # print ('*************content of chatlist content: ', dictInfo)
             return True
         else:
             return False       

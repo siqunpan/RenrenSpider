@@ -44,23 +44,23 @@ def Main():
     
     print ('userID and ownerID: ', userID, ', ', PrivateConfig.OwnerID)
 
-    #albumManager = AlbumManager(baobao, userID, PrivateConfig.OwnerID)
-    #albumManager.work()
+    albumManager = AlbumManager(baobao, userID, PrivateConfig.OwnerID)
+    albumManager.work()
 
-    #blogManager = BlogManager(baobao, userID, PrivateConfig.OwnerID)
-    #blogManager.work()
+    blogManager = BlogManager(baobao, userID, PrivateConfig.OwnerID)
+    blogManager.work()
 
-    #status = Status(baobao, userID, PrivateConfig.OwnerID)
-    #status.work()
+    status = Status(baobao, userID, PrivateConfig.OwnerID)
+    status.work()
 
-    #gossip = Gossip(baobao, userID, PrivateConfig.OwnerID)
-    #gossip.work()
+    gossip = Gossip(baobao, userID, PrivateConfig.OwnerID)
+    gossip.work()
 
     chatManager = ChatManager(baobao, userID, PrivateConfig.OwnerID)
     chatManager.work()
 
-    #repo = RepoMysql(baobao, userID)
-    #repo.work()
+    repo = RepoMysql(baobao, userID)
+    repo.work()
 
     endDatetime = datetime.datetime.now()
     print('All info of renren.com have been downloaded with time: ', endDatetime - beginDateTime)
