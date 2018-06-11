@@ -37,7 +37,7 @@ createSql = 'create table %s(\
                 comf varchar(4),\
                 primary key (id))'
 
-insertSql = 'insert into people \
+insertSql = 'insert into %s \
             (id,name,relation,gender,birth,hometown,belong,firstGroup,edu,comf) values \
             ("%s","%s","%s","%s","%s","%s","%s","%s","%s","%s")'
 
@@ -106,7 +106,9 @@ class RepoMysql:
     def insertDB(self):
         try:
             for item in self.peopleList:
-                self.cursor.execute(insertSql % item)
+                paramTup = (Config.DBTableName,)  #建立单个元素的tuple，使用逗号
+                paramTup = paramTup + item
+                self.cursor.execute(insertSql % paramTup)
         except Exception as e:
             print (e)
             #回滚当前事务
@@ -157,7 +159,7 @@ class RepoMysql:
                 print ('Already collect %d/%d people info, time: ' % (i, count), datetime.datetime.now())
             i += 1
 
-            if i == 5:
+            if i == 6:
                 break
 
         endDatetime = datetime.datetime.now()
@@ -165,11 +167,7 @@ class RepoMysql:
 
     def work(self):
         self.dropDB()
-        print ('1111111111111111111111111111')
         self.createDB()  #建立数据库以及用表
-        print ('2222222222222222222222222222')
-        self.collectInfo()  #收集自己以及所有好友信息
-        print ('3333333333333333333333333333')        
+        self.collectInfo()  #收集自己以及所有好友信息      
         self.insertDB()  #将收集到的信息写入数据库
-        print ('4444444444444444444444444444')
         self.outputDB()   #输出数据库信息到指定文件
