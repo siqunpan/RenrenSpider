@@ -7,7 +7,17 @@
     3. 状态及评论status
     4. 留言板功能gossip(旧版人人，新版保留了)
     5. 聊天功能chat(新版人人)
-    6. 自己以及所有好友的信息，出现存储到mysql数据库中，再存储到本地
+    6. 自己以及所有好友的信息，先存储到mysql数据库中，再存储到本地
+
+    通用：
+    1 我是通过Chrome的开发者工具的element选项查看的网页html代码，以及通过network选项进行抓包的，
+        通过查看人人网html里charset属性得知人人网网页编码格式是utf-8
+    2 在使用json.load()获得python的dictionary格式数据之后，知道dictionary中的key值信息有两种方式：
+        2.1 通过print()函数打印出服务器返回的content
+        2.2 如果服务器返回的数据是json格式，则将google开发者工具中network，中捕获的数据中的request url
+            输入到网址栏，就可以看到范返回数据。
+            但是如果服务器返回的是数据是html格式字，json数据是通过beautifulsoup对象查询获得，这种情况下
+            这个第二种方法就不适用，只能适用打印信息的方法
 '''
 
 from Spider import RenrenSpider

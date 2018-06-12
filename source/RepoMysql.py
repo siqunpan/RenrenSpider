@@ -129,6 +129,8 @@ class RepoMysql:
             outputFilePath = re.sub(pattern, r'/', outputFilePath)
             outputFilePath = outputFilePath + Config.DBName + '/' + Config.DBFile
 
+            CommonFunction.RemoveFile(outputFilePath)  #如果该文件事先已存在则先删除，否则会报错
+
             #先输出查询数据到MySQL指定路径
             self.cursor.execute(outputSql % (Config.DBTableName, Config.DBFile))
             self.connect.commit()

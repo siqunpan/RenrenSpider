@@ -11,10 +11,17 @@ def CreatePath(path):
 def IsPathExist(path):
     return os.path.exists(path)
 
+def RemoveFile(path):
+    if IsPathExist(path):
+        os.remove(path)    
+
 '''
-json.loads 用于解码 JSON 数据。该函数返回 Python 字段的数据类型。
-当我们用requests请求一个返回json的接口时候，得到的结果中包含了一串让人看
-不懂的东西 \\uxxxx的，这是中文对应的unicode编码形式。json.loads()就可以把他们转化为中文
+    服务器返回的是html格式数据，不是json格式，之后通过beautifulsoup查询获得其中需要的json数据的时候，
+    这种从html中获得的json数据格式是有问题不完全满足json格式的，因此需要用这个函数进行转化
+
+    json.loads 用于解码 JSON 数据，将满足json格式要求的str类型的数据转成python中的dictionary类型。
+    当我们用requests请求一个返回json的接口时候，得到的结果中包含了一串让人看
+    不懂的东西 \\uxxxx的，这是中文对应的unicode编码形式。json.loads()就可以把他们转化为中文
 '''
 def generateJson(rawContent):
     '''

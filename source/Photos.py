@@ -20,6 +20,9 @@ class Photos:
 
     #通过一张照片的页面就可以获得该相册所有照片的信息
     def getPhotoDetailList(self):
+        #服务器返回的是html格式数据，不是json格式，需要查询获得html中需要的json数据
+        #因此要使用BeautifulSoup()从HTML或XML文件中提取所需的json数据，
+        #beautifulsoup自动将输入文档转换为Unicode编码，输出文档转换为utf-8编码。得到一个BeautifulSoup的对象, 
         soup = BeautifulSoup(self.spider.getContent(self.pageURL))
         '''
         打开URL后，在chrome开发者工具的element选项里的页面的html中的内容

@@ -12,9 +12,9 @@ import CommonFunction
 class RenrenSpider:
     
     '''
-        This is the spider especially for www.renren.com
+         www.renren.com的爬虫类
     '''
-    #construction
+
     def __init__ (self):
         self.username = PrivateConfig.Email		#set username
         self.password = PrivateConfig.Password 	#set password
@@ -49,7 +49,7 @@ class RenrenSpider:
         #open a url
         url = urllib.request.urlopen(request).geturl()
         print (url)
-        if re.match('http://www.renren.com/[\d]{9}', url):
+        if re.match('http://www.renren.com/[\d]{9}', url):  #如果返回URL是人人主页则说明登陆成功，否则需要重新登陆
             #login succefully
             self.userID = url.split('/')[3]  #get userID
             print ('Login Successfully')
@@ -114,7 +114,7 @@ class RenrenSpider:
         return page
 
     def getContent(self, url, data = None):
-        return self.getRawContent(url, data).read()	
+        return self.getRawContent(url, data).read()  #使用response.read()可以读取html	
     
     def getUserID(self):
         return self.userID

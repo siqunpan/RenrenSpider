@@ -22,6 +22,9 @@ class Album:
 
     #方法同AlbumManager中的getAllAlbumList()，看那里的注释就好了
     def getPhotoList(self):
+        #服务器返回的是html格式数据，不是json格式，需要查询获得html中需要的json数据
+        #因此要使用BeautifulSoup()从HTML或XML文件中提取所需的json数据，
+        #beautifulsoup自动将输入文档转换为Unicode编码，输出文档转换为utf-8编码。得到一个BeautifulSoup的对象, 
         soup = BeautifulSoup(self.spider.getContent(self.url))
         for item in soup.find_all('script', type = 'text/javascript'):
             if 'nx.data.photo' in item.getText():

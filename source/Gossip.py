@@ -16,6 +16,7 @@ class Gossip:
         self.gossipFilePath = Config.DATAPATH + '/' + self.ownerID + '/' + Config.GossipFile
 
     def setGossipCount(self, content):
+        #服务器返回的数据直接就是json格式，不是html格式，因此可以直接转化为python的dictionary格式
         dictInfo = json.loads(content)
         #print ('********dictInfo for obtaining quantity of gossips: ', dictInfo)
         #'gossipCount'这个标签是通过打印出来返回数据观察得到

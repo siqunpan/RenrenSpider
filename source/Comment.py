@@ -37,12 +37,15 @@ class Comment:
         #print ('**********dict content end************')
         
         '''
-            以下dictionary中的key值信息是通过打印出服务器返回的content，分析其内容得到的
+            以下dictionary中的key值信息有两种方式：
+                1 通过print()函数打印出服务器返回的content
+                2 如果服务器返回的数据是json格式，则将google开发者工具中network
+            中捕获的数据中的request url输入到网址栏，就可以看到范返回数据
             
-            json.loads()用于将str类型的数据转成dictionary
-
+            json.loads 用于解码 JSON 数据，将满足json格式要求的str类型的数据转成python中的dictionary类型。
             当我们用requests请求一个返回json的接口时候，得到的结果中包含了一串让人看
             不懂的东西 \\uxxxx的，这是中文对应的unicode编码形式。json.loads()就可以把他们转化为中文
+
         '''
         dictInfo = json.loads(content) 
         for item in dictInfo['comments']:
