@@ -31,6 +31,7 @@ class FriendList:
         
         self.friendsNum = dictInfo['data']['hostFriendCount']  #除了遍历friends，'hostFriendCount'属性也能获得好友数量
         for item in dictInfo['data']['friends']:
+            #print ('#################, item[\'fid\']: ', item['fid'])
             info = {}
             #当有多个分组时，暂时只取第一个分组，之后再加上第二个组
             if len(item['fgroups']) == 0:

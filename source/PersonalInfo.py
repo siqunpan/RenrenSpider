@@ -89,14 +89,18 @@ class PersonalInfo:
             url = page.geturl()
             content = page.read()
 
-            #对比返回页面的url是否和打开该页面的request url相同，不同则说明进入了输入验证码验证的页面
+            #对比返回页面的url是否和打开该页面的request url相同，不同则说明进入了其他页面
             if url != self.personalInfoURL:
-                if 'validateuser.do' in url:
+                print ('@@@@@@@@@@@@@@@@url: ', url)
+                print ('@@@@@@@@@@@@@@@@self.personalInfoURL: ', self.personalInfoURL)
+                if 'validateuser.do' in url:  #进入输入验证码页面
                     self.optionalValidate(content)
                     continue
-                else:
-                    print ('Error: unknown error')
-                    return
+                elif 'page.renren.com' in url:  #该好友是公共主页，进入公共主页页面
+                    return 'public page' 
+                else:  #进入未知页面
+                    print ('Error: return unknown page url, will return None： '，url)
+                    return  #这里会返回None，导致后续对这个NoneType进行操作会报错
             else:
                 break
         return self.getInfo(content)

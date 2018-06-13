@@ -13,6 +13,7 @@ pymysql.install_as_MySQLdb()
 
 from PersonalInfo import PersonalInfo
 from FriendList import FriendList
+from PublicPage import PublicPage
 
 #所需数据库命令
 '''
@@ -42,6 +43,24 @@ insertSql = 'insert into %s \
             (id,name,relation,gender,birth,hometown,belong,firstGroup,secondGroup,edu,comf) values \
             ("%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s")'
 
+createPublicPageSql = 'create table %s(\
+                        id char(9) not null,\
+                        name varchar(15),\
+                        description varchar(200),\
+                        item1 varchar(40),\
+                        item2 varchar(40),\
+                        item3 varchar(40),\
+                        item4 varchar(40),\
+                        item5 varchar(40),\
+                        item6 varchar(40),\
+                        item7 varchar(40),\
+                        item8 varchar(40),\
+                        primary key (id))'
+
+insertPublicPageSql = 'insert into %s \
+                        (id,name,description,item1,item2,item3,item4,item5,item6,item7,item8) values \
+                        ("%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s")'
+
 outputSql = 'select * from %s into outfile "%s"'
 
 showOutputFilePathSql = 'show variables like \'secure_file_priv\''
@@ -59,6 +78,7 @@ class RepoMysql:
         self.userID = userID
         self.ownerID = ownerID
         self.peopleList = []
+        self.publicPageList = []  #一些好友是公共主页，这里存储公共主页ID的列表
 
     def __del__(self):
         #先关闭数据库交互对象cursor，再关闭数据库连接对象connect
@@ -95,6 +115,7 @@ class RepoMysql:
 
             #创建数据库表
             self.cursor.execute(createSql % Config.DBTableName)
+            self.cursor.execute(createPublicPageSql % Config.PublicPageDBTableName)
             #提交数据库操作
             self.connect.commit()
 
@@ -111,6 +132,10 @@ class RepoMysql:
                 paramTup = (Config.DBTableName,)  #建立单个元素的tuple，使用逗号
                 paramTup = paramTup + item
                 self.cursor.execute(insertSql % paramTup)
+            for item in self.publicPageList:
+                paramTup = (Config.PublicPageDBTableName,)  #建立单个元素的tuple，使用逗号
+                paramTup = paramTup + item
+                self.cursor.execute(insertPublicPageSql % paramTup)
         except Exception as e:
             print (e)
             #回滚当前事务
@@ -136,15 +161,23 @@ class RepoMysql:
             outputFilePath = re.sub(pattern, r'/', outputFilePath)
             outputFilePath = outputFilePath + Config.DBName + '/' + Config.DBFile
 
+            outputPublicPageFilePath = outputFilePath + Config.DBName + '/' + Config.PublicPageDBFile
+
             CommonFunction.RemoveFile(outputFilePath)  #如果该文件事先已存在则先删除，否则会报错
+            CommonFunction.RemoveFile(outputPublicPageFilePath)  #如果该文件事先已存在则先删除，否则会报错
 
             #先输出查询数据到MySQL指定路径
             self.cursor.execute(outputSql % (Config.DBTableName, Config.DBFile))
+            self.cursor.execute(outputSql % (Config.PublicPageDBTableName, Config.PublicPageDBFile))
             self.connect.commit()
 
             destPath = Config.DATAPATH + '/' + self.ownerID + '/' + Config.DBFile
             #最后将指定路径下的输出文件移动到工程目录下
             shutil.move(outputFilePath, destPath)
+
+            destPathPublicPage = Config.DATAPATH + '/' + self.ownerID + '/' + Config.PublicPageDBFile
+            #最后将指定路径下的输出文件移动到工程目录下
+            shutil.move(outputPublicPageFilePath, destPathPublicPage)
 
         except Exception as e:
             print (e)
@@ -165,7 +198,17 @@ class RepoMysql:
         print ('Begin to collect all people info, time: ', beginDatetime)
         for item in friends:
             friend = PersonalInfo(self.spider, self.userID, item['fid'], item)
-            self.peopleList.append(friend.work())
+            friendInfo = friend.work()
+            if friendInfo == None:
+                print('FriendInfo is None with item[\'fid\'], perhaps it is public page or \
+                        other unknown page: ', item['fid'])
+            elif friendInfo == 'public page':  #当该好友是公共主页的时候
+                publicPage = PublicPage(self.spider, self.userID, item['fid'])
+                publicPageInfo = publicPage.work()
+                self.publicPageList.append(publicPageInfo)
+            else:
+                self.peopleList.append(friendInfo)
+            
             if i % 100 == 0:
                 print ('Already collect %d/%d people info, time: ' % (i, count), datetime.datetime.now())
             i += 1
@@ -176,6 +219,6 @@ class RepoMysql:
         self.dropDB()   #即使使用了 create database if not exists，但是仍然会报错 database ‘renren’ already exists
                             #的错误，所以先删除数据库再建立
         self.createDB()  #建立数据库以及用表
-        self.collectInfo()  #收集自己以及所有好友信息      
+        self.collectInfo()  #收集自己以及所有好友信息    
         self.insertDB()  #将收集到的信息写入数据库
         self.outputDB()   #输出数据库信息到指定文件

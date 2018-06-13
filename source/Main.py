@@ -51,25 +51,25 @@ def Main():
     
     print ('userID and ownerID: ', userID, ', ', PrivateConfig.OwnerID)
 
-    #相册照片及评论album and photo
-    albumManager = AlbumManager(baobao, userID, PrivateConfig.OwnerID)
-    albumManager.work()
+    # #相册照片及评论album and photo
+    # albumManager = AlbumManager(baobao, userID, PrivateConfig.OwnerID)
+    # albumManager.work()
 
-    #日志及评论blog
-    blogManager = BlogManager(baobao, userID, PrivateConfig.OwnerID)
-    blogManager.work()
+    # #日志及评论blog
+    # blogManager = BlogManager(baobao, userID, PrivateConfig.OwnerID)
+    # blogManager.work()
 
-    #状态及评论status
-    status = Status(baobao, userID, PrivateConfig.OwnerID)
-    status.work()
+    # #状态及评论status
+    # status = Status(baobao, userID, PrivateConfig.OwnerID)
+    # status.work()
 
-    #留言板功能gossip(旧版人人，新版保留了)
-    gossip = Gossip(baobao, userID, PrivateConfig.OwnerID)
-    gossip.work()
+    # #留言板功能gossip(旧版人人，新版保留了)
+    # gossip = Gossip(baobao, userID, PrivateConfig.OwnerID)
+    # gossip.work()
 
-    #聊天功能chat(新版人人)
-    chatManager = ChatManager(baobao, userID, PrivateConfig.OwnerID)
-    chatManager.work()
+    # #聊天功能chat(新版人人)
+    # chatManager = ChatManager(baobao, userID, PrivateConfig.OwnerID)
+    # chatManager.work()
 
     #自己以及所有好友的信息，出现存储到mysql数据库中，再存储到本地
     repo = RepoMysql(baobao, userID, PrivateConfig.OwnerID)

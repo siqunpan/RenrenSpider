@@ -11,9 +11,11 @@
 CookieFile = 'cookie.txt'
 GossipFile = 'gossip.markdown'
 ChatFile = 'chat.markdown'
-DBFile = 'people.markdown'
-DBName = 'renren'
-DBTableName = 'people'
+DBName = 'renren'  #数据库名字
+DBTableName = 'people'  #存储所有好友信息的数据库表
+DBFile = 'people.markdown'  #存储所有好友信息的本地文件
+PublicPageDBTableName = 'publicPage'    #存储所有公共主页信息的数据库表
+PublicPageDBFile = 'publicPage.markdown'  #存储所有公共主页信息的本地文件
 
 #这些是建立数据库连接的时候的设置，其中注意密码passwd
 DBConnectInfo = {
@@ -104,6 +106,12 @@ FRIENDLISTURL = r'http://friend.renren.com/groupsdata'
 #新版人人网好友URL：获取方法为点击人人网主页右上角好友按钮，然后下拉好友菜单就能在network中捕捉到了
 #这个URL在程序里只用来获得每个好友的聊天信息，而不是获得详细好友信息
 FRIENDLISTURLNEW = r'http://webpager.renren.com/api/getFriendsInfo'
+
+#部分人人网公共主页的URL，用于获取好友信息时遇到公共主页的情况
+PUBLICPAGEURL = r'http://page.renren.com/%s?v=info_timeline'
+
+#部分人人网公共主页信息的URL，用于获取好友信息时遇到公共主页的情况
+PUBLICPAGEINFOURL = r'http://page.renren.com/%s/info'
 
 #在短时间内连续查看了100个人的页面之后会弹出验证页面，可能是为了防止爬虫
 #获得方式：在打开一个url之后，对返回的内容对象调用geturl()方法获得返回的url，然后对比这两url，如果不一样则说明
