@@ -31,7 +31,7 @@ createSql = 'create table %s(\
                 gender char(1),\
                 birth varchar(20),\
                 hometown varchar(20),\
-                belong varchar(20),\
+                belong varchar(40),\
                 firstGroup varchar(20),\
                 secondGroup varchar(20),\
                 edu varchar(200),\
