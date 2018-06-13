@@ -33,13 +33,14 @@ createSql = 'create table %s(\
                 hometown varchar(20),\
                 belong varchar(20),\
                 firstGroup varchar(20),\
+                secondGroup varchar(20),\
                 edu varchar(200),\
                 comf varchar(4),\
                 primary key (id))'
 
 insertSql = 'insert into %s \
-            (id,name,relation,gender,birth,hometown,belong,firstGroup,edu,comf) values \
-            ("%s","%s","%s","%s","%s","%s","%s","%s","%s","%s")'
+            (id,name,relation,gender,birth,hometown,belong,firstGroup,secondGroup,edu,comf) values \
+            ("%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s")'
 
 outputSql = 'select * from %s into outfile "%s"'
 
@@ -117,6 +118,12 @@ class RepoMysql:
         else:
             print ('Insert database successfully')
 
+    '''
+        select * from people into outfile 只能输出到mysql指定的位置，
+        我尝试了网上的更改secure_file_priv的方法，发现还是不能输出到我的工程目录下，
+        我采用的方法就是在python中获得secure_file_priv路径，然后找到输出的文件，
+        最后移动该文件到工程指定的目录下
+    '''
     def outputDB(self):
         try:
             #获取MySQL规定默认输出文件路径，由于结果集是是tuple,所以可以像数组一样使用结果集获取数据

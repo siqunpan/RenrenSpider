@@ -55,14 +55,15 @@ class PersonalInfo:
             #获得自己的名字
             myName = self.soup.find('a', class_ = 'hd-name').get_text()
             relation = 'myself'
-            name,belong,firstGroup,comf = myName,'','',''
+            name, belong, firstGroup, secondGroup, comf = myName, '', '', '', ''
         else:
             relation = 'friend'
             name = self.summary['fname']
             belong = self.summary['belong']
             firstGroup = self.summary['firstGroup']
+            secondGroup = self.summary['secondGroup']
             comf = self.summary['comf']
-        return (id,name,relation,gender,birth,hometown,belong,firstGroup,edu,comf)  
+        return (id,name,relation,gender,birth,hometown,belong,firstGroup,secondGroup,edu,comf)  
 
     def optionalValidate(self,content):
         soup = BeautifulSoup(content)

@@ -68,10 +68,11 @@ class Gossip:
         print ('save gossip complete')
 
     def work(self):
+        #请求方法为post，network中抓包观察得知
         #任何一个留言页面的返回数据中都有gossipCount这个留言总数的数据，因此我们这里取第一页的返回数据就可以了
         self.setGossipCount(self.spider.getContent(self.url, self.getGossipData(0).encode('utf-8')))
         i = 0
-        gossipMaxNumEachPage = 20  #每一页的留言最大数量
+        gossipMaxNumEachPage = 20  #每一页的留言最大数量，从服务器返回html数据得知
         for i in range(0, self.gossipCount//gossipMaxNumEachPage + 1):
             self.setContent(self.spider.getContent(self.url, self.getGossipData(i).encode('utf-8')))
         self.saveContent() 

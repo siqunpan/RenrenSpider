@@ -41,7 +41,7 @@ ALBUMLISTPATH = 'albumlist'
 '''
 下面两个登陆的URL都适用：F12开启google开发者工具(勾选 preserve log选项)
   1 在人人网登陆界面，在Elements页面能找到http://www.renren.com/PLogin.do这个链接
-  2 人人网登陆之后进入首页，在Network页面可以找到login？开头的post条目，里面可以
+  2 人人网登陆之后进入首页，在Network页面可以找到login？开头的Method為post方法的条目，里面可以
     得到http://www.renren.com/ajaxLogin/login?1=1&uniqueTimestamp=2016202210414这个链接
     并且在Form Data表单数据栏可以看到需要提供的数据
 '''
@@ -87,7 +87,7 @@ BLOGURL = r'http://blog.renren.com/blog/%s/%s?bfrom=01020110200'
 #开发者工具的Element页面中获得这个URL
 #或者在人人网个人主页会有提示“留言功能已全面升级为聊天，查看历史留言记录”，点击可以进入留言板，此时在network中是捕捉不到
 #这个URL的包的，需要随便翻到另外一页，然后再network中可以找到叫ajaxgossiplist.do的条目，这个Request URL就是我们需要的
-#注意这个包是post类型，不是get
+#注意这个URL请求方法为post，不是get
 GOSSIPURL = r'http://gossip.renren.com/ajaxgossiplist.do'
 
 #聊天URL获得：在人人网主界面的聊天区域，打开任一人的聊天窗口在network中都会抓到名字以getChatList?开头的数据包

@@ -24,9 +24,6 @@ class Photos:
         #因此要使用BeautifulSoup()从HTML或XML文件中提取所需的json数据，
         #beautifulsoup自动将输入文档转换为Unicode编码，输出文档转换为utf-8编码。得到一个BeautifulSoup的对象, 
         soup = BeautifulSoup(self.spider.getContent(self.pageURL))
-        '''
-        打开URL后，在chrome开发者工具的element选项里的页面的html中的内容
-        '''
         for item in soup.find_all('script', type = 'text/javascript'):
             if 'nx.data.photo' in item.getText():
                 rawContent = item.getText()
