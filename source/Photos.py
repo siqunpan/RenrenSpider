@@ -5,6 +5,9 @@ import CommonFunction
 import urllib
 from Comment import Comment
 from bs4 import BeautifulSoup
+from selenium import webdriver
+import os
+
 
 class Photos:
 
@@ -84,18 +87,22 @@ class Photos:
                 f.write(Config.GAP.encode('utf-8'))
 
     def getPhotoRealURL(self):
+        driver = webdriver.PhantomJS(executable_path='C:/Users/ADMIN/Downloads/phantomjs-2.1.1-windows/phantomjs-2.1.1-windows/bin/phantomjs.exe')
+        driver.get(self.pageURL)
+        print ('*************driver.page_source: ', driver.page_source)
+
         sourceContent = self.spider.getContent(self.pageURL)
-        print ('*************sourceContent: ', sourceContent)
+        #print ('*************sourceContent: ', sourceContent)
         soup = BeautifulSoup(sourceContent)
-        print('****************soup: ', soup)
+        #print('****************soup: ', soup)
 
         imgContent = soup.find(name='img', class_ = 'photo-item photo-item-cur')
-        print('*****************imgContent, and src: ', imgContent, ', ', imgContent.get('src'))
+        #print('*****************imgContent, and src: ', imgContent, ', ', imgContent.get('src'))
 
         content = soup.find_all('div', class_ = 'photo-list')
         for item in content:
-            print('*****************getPhotoRealURL content: ', item)
-            print('*****************getPhotoRealURL: ', item.img['src'])
+            #print('*****************getPhotoRealURL content: ', item)
+            #print('*****************getPhotoRealURL: ', item.img['src'])
             if content == None:
                 print('*****************getPhotoRealURL is None')
             self.urlShown = item.img['src']
