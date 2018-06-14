@@ -48,15 +48,21 @@ class Album:
 
     def savePhotos(self):
         for item in self.photoList:
-            photos = Photos(self.spider, self.userID, self.albumName, item, self.path)
+            photos = Photos(self.spider, self.userID, self.albumName, item, self.path, False)
             photos.work()
             break  #通过一张照片的信息就可以在element页面下的html代码中得到该相册所有照片，所以不用遍历每一个照片信息了
+
+    def savePhotosShown(self):
+        for item in self.photoList:
+            photos = Photos(self.spider, self.userID, self.albumName, item, self.path, True)
+            photos.work()
 
     def work(self):
         self.getPhotoList()
         self.getAlbumComments()
         print (datetime.datetime.now(), self.albumName, 'is downloadinig...')
         self.savePhotos()
+        self.savePhotosShown()
         print (datetime.datetime.now(), self.albumName, 'saves successfully!')    	
 
 

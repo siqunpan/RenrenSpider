@@ -51,9 +51,9 @@ def Main():
     
     print ('userID and ownerID: ', userID, ', ', PrivateConfig.OwnerID)
 
-    # #相册照片及评论album and photo
-    # albumManager = AlbumManager(baobao, userID, PrivateConfig.OwnerID)
-    # albumManager.work()
+    #相册照片及评论album and photo
+    albumManager = AlbumManager(baobao, userID, PrivateConfig.OwnerID)
+    albumManager.work()
 
     # #日志及评论blog
     # blogManager = BlogManager(baobao, userID, PrivateConfig.OwnerID)
@@ -71,9 +71,9 @@ def Main():
     # chatManager = ChatManager(baobao, userID, PrivateConfig.OwnerID)
     # chatManager.work()
 
-    #自己以及所有好友的信息，出现存储到mysql数据库中，再存储到本地
-    repo = RepoMysql(baobao, userID, PrivateConfig.OwnerID)
-    repo.work()
+    # #自己以及所有好友的信息，出现存储到mysql数据库中，再存储到本地
+    # repo = RepoMysql(baobao, userID, PrivateConfig.OwnerID)
+    # repo.work()
 
     endDatetime = datetime.datetime.now()
     print('All info of renren.com have been downloaded with time: ', endDatetime - beginDateTime)
