@@ -8,7 +8,7 @@ from bs4 import BeautifulSoup
 class PublicPage:
 
     def __init__(self, spider, userID, publicPageID):
-    	self.publicPageInfoURL = Config.PUBLICPAGEINFOURL % publicPageID
+        self.publicPageInfoURL = Config.PUBLICPAGEINFOURL % publicPageID
         self.spider = spider
         self.userID = userID
         self.publicPageID = publicPageID
@@ -35,7 +35,7 @@ class PublicPage:
         content = self.soup.find_all('div', class_ = 'info-item')
         if content == None:
             return
-        int i = 0 
+        i = 0 
         for item in content:
             detailContent = item.find_all('li')
             for detailItem in detailContent:
@@ -86,7 +86,7 @@ class PublicPage:
                     self.optionalValidate(content)
                     continue 
                 else:  #进入未知页面
-                    print ('Error: return unknown page url, will return None： '，url)
+                    print ('Error: return unknown page url, will return None： ', url)
                     return  #这里会返回None，导致后续对这个NoneType进行操作会报错
             else:
                 break

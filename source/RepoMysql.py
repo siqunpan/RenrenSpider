@@ -158,10 +158,10 @@ class RepoMysql:
 
             #将'\'换为'/'，以满足python路径格式
             pattern = r'\\'
-            outputFilePath = re.sub(pattern, r'/', outputFilePath)
-            outputFilePath = outputFilePath + Config.DBName + '/' + Config.DBFile
+            outputFilePathBasic = re.sub(pattern, r'/', outputFilePath)
+            outputFilePath = outputFilePathBasic + Config.DBName + '/' + Config.DBFile
 
-            outputPublicPageFilePath = outputFilePath + Config.DBName + '/' + Config.PublicPageDBFile
+            outputPublicPageFilePath = outputFilePathBasic + Config.DBName + '/' + Config.PublicPageDBFile
 
             CommonFunction.RemoveFile(outputFilePath)  #如果该文件事先已存在则先删除，否则会报错
             CommonFunction.RemoveFile(outputPublicPageFilePath)  #如果该文件事先已存在则先删除，否则会报错
@@ -197,14 +197,20 @@ class RepoMysql:
         beginDatetime = datetime.datetime.now()
         print ('Begin to collect all people info, time: ', beginDatetime)
         for item in friends:
+            # if i <= 140:
+            #     i += 1
+            #     continue
+            # if i >= 145:
+            #     break
+
             friend = PersonalInfo(self.spider, self.userID, item['fid'], item)
             friendInfo = friend.work()
             if friendInfo == None:
-                print('FriendInfo is None with item[\'fid\'], perhaps it is public page or \
-                        other unknown page: ', item['fid'])
+                print('Error: FriendInfo is None with item[\'fid\']: unknown page: ', item['fid'])
             elif friendInfo == 'public page':  #当该好友是公共主页的时候
                 publicPage = PublicPage(self.spider, self.userID, item['fid'])
                 publicPageInfo = publicPage.work()
+                #print ('###########publicPageInfo: ', publicPageInfo)
                 self.publicPageList.append(publicPageInfo)
             else:
                 self.peopleList.append(friendInfo)
