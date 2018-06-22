@@ -122,12 +122,12 @@ class Photos:
 
     def getPhotoRealURL(self):
 
-        chrome_options = Options()
-        chrome_options.add_argument("--headless")
+        chromeOptions = Options()
+        chromeOptions.add_argument("--headless")
 
         chromedriverPath = "C:/Program Files (x86)/Google/Chrome/Application/chromedriver.exe"
         os.environ["webdriver.chrome.driver"] = chromedriverPath
-        driver = webdriver.Chrome(chromedriver, chrome_options)
+        driver = webdriver.Chrome(chromedriverPath, chromeOptions)
         self.tryLogin(driver,self.pageURL)
         driver.get(self.pageURL)
 
@@ -155,6 +155,9 @@ class Photos:
             return
 
         filename = self.path + '/' + str(self.curPhotoID) + '_shown' + '.jpg'
+
+        print ('********************filename of photo: ', filename)
+
         count = 0
         if CommonFunction.IsPathExist(filename) == False:  #如果该照片已经存在则不创建，为了节省程序运行时间
             with open(filename, 'wb') as f:
@@ -165,6 +168,7 @@ class Photos:
                         opener.addheaders = [('User-Agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.181 Safari/537.36')]
                         urllib.request.install_opener(opener)
                         urllib.request.urlretrieve(self.urlShown, filename)  #将照片从远程数据下载到本地
+                        print ('********************download photo shown in page successfully: ', self.urlShown)
                     except Exception as e:
                         print (item['id'], 'fail + 1', e)
                         count += 1
