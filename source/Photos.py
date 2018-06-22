@@ -6,8 +6,10 @@ import urllib
 from Comment import Comment
 from bs4 import BeautifulSoup
 from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
 import os
-
+import requests
+import PrivateConfig
 
 class Photos:
 
@@ -21,6 +23,7 @@ class Photos:
         self.photos = []
         self.path = path
         self.onlyDownloadPhotoReal = onlyDownloadPhotoReal
+        self.curPhotoID = summary['photoId']
 
     #通过一张照片的页面就可以获得该相册所有照片的信息
     def getPhotoDetailList(self):
@@ -86,47 +89,89 @@ class Photos:
                     
                 f.write(Config.GAP.encode('utf-8'))
 
-    def getPhotoRealURL(self):
-        driver = webdriver.PhantomJS(executable_path='C:/Users/ADMIN/Downloads/phantomjs-2.1.1-windows/phantomjs-2.1.1-windows/bin/phantomjs.exe')
-        driver.get(self.pageURL)
-        print ('*************driver.page_source: ', driver.page_source)
+    def getCookies(self, url, account, password):
+        '''通过request 登陆，获取cookie'''
+        data = {
+                'email' : account,
+                'password' : password,
+                'origURL' : 'http://www.renren.com/home',
+                'icode' : ''
+        }
 
-        sourceContent = self.spider.getContent(self.pageURL)
-        #print ('*************sourceContent: ', sourceContent)
-        soup = BeautifulSoup(sourceContent)
-        #print('****************soup: ', soup)
+        cookiesList = []
+        #data = {"username":account,"passwd":password}
+        roomSession  = requests.Session()
+        roomSession.post(url,data=data)
+        loadCookies = requests.utils.dict_from_cookiejar(roomSession.cookies)
+        for cookieName,cookieValue in loadCookies.items():
+            cookies = {}
+            cookies['name'] = cookieName
+            cookies['value'] = cookieValue
+            cookiesList.append(cookies)
+
+        #print ('22222222222222222222: ', cookiesList)
+        return cookiesList
+
+    def tryLogin(self, driver, requestUrl):
+        '''判断是否登陆状态，非登陆状态,通过cookie登陆'''
+        driver.get(requestUrl) #测试是否为登陆状态
+        if '注册' in driver.page_source:  #判断是否登陆为登陆页面
+            for cookie in self.getCookies(Config.LOGINURL,PrivateConfig.Email,PrivateConfig.Password): #如果登陆界面获取cookie
+                driver.add_cookie(cookie)  #添加cookie ，通过Cookie登陆
+        return driver
+
+    def getPhotoRealURL(self):
+
+        chrome_options = Options()
+        chrome_options.add_argument("--headless")
+
+        chromedriverPath = "C:/Program Files (x86)/Google/Chrome/Application/chromedriver.exe"
+        os.environ["webdriver.chrome.driver"] = chromedriverPath
+        driver = webdriver.Chrome(chromedriver, chrome_options)
+        self.tryLogin(driver,self.pageURL)
+        driver.get(self.pageURL)
+
+        soup = BeautifulSoup(driver.page_source)
 
         imgContent = soup.find(name='img', class_ = 'photo-item photo-item-cur')
-        #print('*****************imgContent, and src: ', imgContent, ', ', imgContent.get('src'))
+        print('*****************imgContent, and src: ', imgContent, ', ', imgContent.get('src'))
 
-        content = soup.find_all('div', class_ = 'photo-list')
-        for item in content:
-            #print('*****************getPhotoRealURL content: ', item)
-            #print('*****************getPhotoRealURL: ', item.img['src'])
-            if content == None:
-                print('*****************getPhotoRealURL is None')
-            self.urlShown = item.img['src']
+        if imgContent.get('src') != None:
+            self.urlShown = imgContent.get('src')
+        else:
+            self.urlShown = None
+
+        # content = soup.find_all('div', class_ = 'photo-list')
+        # for item in content:
+        #     #print('*****************getPhotoRealURL content: ', item)
+        #     #print('*****************getPhotoRealURL: ', item.img['src'])
+        #     if content == None:
+        #         print('*****************getPhotoRealURL is None')
+        #     self.urlShown = item.img['src']
+        #     print('*****************self.urlShown of photo real: ', self.urlShown) 
 
     def savePhotoReal(self):
-        for item in self.photos:
-            filename = self.path + '/' + str(summary['photoId']) + '_shown' + '.jpg'
-            count = 0
-            if CommonFunction.IsPathExist(filename) == False:  #如果该照片已经存在则不创建，为了节省程序运行时间
-                with open(filename, 'wb') as f:
-                    while True:
-                        try:
-                            opener = urllib.request.build_opener()  #构建简单的opener
-                            #Spider.py中还有另外一中设置header内容的写法
-                            opener.addheaders = [('User-Agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.181 Safari/537.36')]
-                            urllib.request.install_opener(opener)
-                            urllib.request.urlretrieve(self.urlShown, filename)  #将照片从远程数据下载到本地
-                        except Exception as e:
-                            print (item['id'], 'fail + 1', e)
-                            count += 1
-                        else:
-                            count = 0
-                            break
-                    #f.write(self.spider.getContent(item['url']))  
+        if self.urlShown == None:
+            return
+
+        filename = self.path + '/' + str(self.curPhotoID) + '_shown' + '.jpg'
+        count = 0
+        if CommonFunction.IsPathExist(filename) == False:  #如果该照片已经存在则不创建，为了节省程序运行时间
+            with open(filename, 'wb') as f:
+                while True:
+                    try:
+                        opener = urllib.request.build_opener()  #构建简单的opener
+                        #Spider.py中还有另外一中设置header内容的写法
+                        opener.addheaders = [('User-Agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.181 Safari/537.36')]
+                        urllib.request.install_opener(opener)
+                        urllib.request.urlretrieve(self.urlShown, filename)  #将照片从远程数据下载到本地
+                    except Exception as e:
+                        print (item['id'], 'fail + 1', e)
+                        count += 1
+                    else:
+                        count = 0
+                        break
+                #f.write(self.spider.getContent(item['url']))  
 
     def work(self):
         if self.onlyDownloadPhotoReal == False:
@@ -136,7 +181,6 @@ class Photos:
         else:
             self.getPhotoRealURL()
             self.savePhotoReal()
-            print ('ss')
 
 
 

@@ -61,7 +61,7 @@ class Album:
         self.getPhotoList()
         self.getAlbumComments()
         print (datetime.datetime.now(), self.albumName, 'is downloadinig...')
-        self.savePhotos()
+        #self.savePhotos()
         self.savePhotosShown()
         print (datetime.datetime.now(), self.albumName, 'saves successfully!')    	
 
