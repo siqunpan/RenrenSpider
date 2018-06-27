@@ -10,6 +10,8 @@ from selenium.webdriver.chrome.options import Options
 import os
 import requests
 import PrivateConfig
+import re
+import time
 
 class Photos:
 
@@ -24,6 +26,8 @@ class Photos:
         self.path = path
         self.onlyDownloadPhotoReal = onlyDownloadPhotoReal
         self.curPhotoID = summary['photoId']
+        self.popupPhotoURL = Config.POPUPPHOTOURL % (self.ownerID, self.albumID, self.ownerID, self.curPhotoID)
+        self.driver = None
 
     #通过一张照片的页面就可以获得该相册所有照片的信息
     def getPhotoDetailList(self):
@@ -49,6 +53,10 @@ class Photos:
                     info['owner'] = item['owner']
                     self.photos.append(info)   
                 break
+
+    def getAllPhotosInfoInAlbum(self):
+        self.getPhotoDetailList()
+        return self.photos
 
     def savePhotos(self):
         for item in self.photos:
@@ -99,7 +107,6 @@ class Photos:
         }
 
         cookiesList = []
-        #data = {"username":account,"passwd":password}
         roomSession  = requests.Session()
         roomSession.post(url,data=data)
         loadCookies = requests.utils.dict_from_cookiejar(roomSession.cookies)
@@ -109,37 +116,95 @@ class Photos:
             cookies['value'] = cookieValue
             cookiesList.append(cookies)
 
-        #print ('22222222222222222222: ', cookiesList)
         return cookiesList
 
-    def tryLogin(self, driver, requestUrl):
+    def tryLogin(self, requestUrl):
         '''判断是否登陆状态，非登陆状态,通过cookie登陆'''
-        driver.get(requestUrl) #测试是否为登陆状态
-        if '注册' in driver.page_source:  #判断是否登陆为登陆页面
+        self.driver.get(requestUrl) #测试是否为登陆状态
+        if '注册' in self.driver.page_source:  #判断是否登陆为登陆页面
             for cookie in self.getCookies(Config.LOGINURL,PrivateConfig.Email,PrivateConfig.Password): #如果登陆界面获取cookie
-                driver.add_cookie(cookie)  #添加cookie ，通过Cookie登陆
-        return driver
+                self.driver.add_cookie(cookie)  #添加cookie ，通过Cookie登陆
 
-    def getPhotoRealURL(self):
-
+    def getPopupPhotoURL(self):
         chromeOptions = Options()
         chromeOptions.add_argument("--headless")
 
-        chromedriverPath = "C:/Program Files (x86)/Google/Chrome/Application/chromedriver.exe"
-        os.environ["webdriver.chrome.driver"] = chromedriverPath
-        driver = webdriver.Chrome(chromedriverPath, chromeOptions)
-        self.tryLogin(driver,self.pageURL)
-        driver.get(self.pageURL)
+        if self.driver == None:
+            chromeOptions = Options()
+            chromeOptions.add_argument("--headless")
 
-        soup = BeautifulSoup(driver.page_source)
+            chromedriverPath = "C:/Program Files (x86)/Google/Chrome/Application/chromedriver.exe"
+            os.environ["webdriver.chrome.driver"] = chromedriverPath
+            self.driver = webdriver.Chrome(executable_path = chromedriverPath, chrome_options = chromeOptions)
+            self.tryLogin(self.popupPhotoURL)
+
+        self.driver.get(self.popupPhotoURL) 
+        soup = BeautifulSoup(self.driver.page_source) 
+
+        imgPopupContent = soup.find(name='img', class_ = 'pop-content-img viewer-img-show')
+        if imgPopupContent != None:
+            print('*****************imgPopupContent, and src: ', imgPopupContent, ', ', imgPopupContent.get('src'))
+        else:
+            print('*****************imgPopupContent is None!!!')
+
+        if imgPopupContent != None and imgPopupContent.get('src') != None:
+            self.urlPopup = imgPopupContent.get('src')
+        else:
+            self.urlPopup = None
+
+    def getPhotoRealURL(self):
+        if self.driver == None:
+            chromeOptions = Options()
+            chromeOptions.add_argument("--headless")
+
+            chromedriverPath = "C:/Program Files (x86)/Google/Chrome/Application/chromedriver.exe"
+            os.environ["webdriver.chrome.driver"] = chromedriverPath
+            self.driver = webdriver.Chrome(executable_path = chromedriverPath, chrome_options = chromeOptions)
+            self.tryLogin(self.pageURL)
+
+        self.driver.get(self.pageURL) 
+
+        soup = BeautifulSoup(self.driver.page_source)
 
         imgContent = soup.find(name='img', class_ = 'photo-item photo-item-cur')
-        print('*****************imgContent, and src: ', imgContent, ', ', imgContent.get('src'))
-
-        if imgContent.get('src') != None:
-            self.urlShown = imgContent.get('src')
+        if imgContent != None:
+            print('*****************imgContent, and src: ', imgContent, ', ', imgContent.get('src'))
         else:
+            print('*****************imgContent is None!!!')
+
+        if imgContent != None and imgContent.get('src') != None:
+            self.urlShown = imgContent.get('src')
+        else:    #有时候链接失效，因此需要使用popup的url
+            self.getPopupPhotoURL()
             self.urlShown = None
+
+        imgContentPre = soup.find(name='img', class_ = 'photo-item photo-item-pre')
+        if imgContentPre != None and imgContentPre.get('id') != "":
+            imgIdStrPre = imgContentPre.get('id')
+            pattern = r'\d+'
+
+            self.prePhotoID = (re.search(pattern, imgIdStrPre)).group()
+        else:
+            print('*****************imgContentPre is None!!!')
+
+        if imgContentPre != None and imgContentPre.get('src') != None:
+            self.urlShownPre = imgContentPre.get('src')
+        else:
+            self.urlShownPre = None
+
+        imgContentNext = soup.find(name='img', class_ = 'photo-item photo-item-next')
+        if imgContentNext != None and imgContentNext.get('id') != "":
+            imgIdStrNext = imgContentNext.get('id')
+            pattern = r'\d+'
+
+            self.nextPhotoID = re.search(pattern, imgIdStrNext).group()
+        else:
+            print('*****************imgContentNext is None!!!')
+
+        if imgContentNext != None and imgContentNext.get('src') != None:
+            self.urlShownNext = imgContentNext.get('src')
+        else:
+            self.urlShownNext = None
 
         # content = soup.find_all('div', class_ = 'photo-list')
         # for item in content:
@@ -152,11 +217,12 @@ class Photos:
 
     def savePhotoReal(self):
         if self.urlShown == None:
-            return
+            if self.urlPopup == None:
+                return
+            else:
+                self.urlShown = self.urlPopup
 
         filename = self.path + '/' + str(self.curPhotoID) + '_shown' + '.jpg'
-
-        print ('********************filename of photo: ', filename)
 
         count = 0
         if CommonFunction.IsPathExist(filename) == False:  #如果该照片已经存在则不创建，为了节省程序运行时间
@@ -177,14 +243,70 @@ class Photos:
                         break
                 #f.write(self.spider.getContent(item['url']))  
 
+    def savePhotoRealPre(self):
+        if self.urlShownPre == None:
+            return
+
+        filename = self.path + '/' + str(self.prePhotoID) + '_shown' + '.jpg'
+
+        count = 0
+        if CommonFunction.IsPathExist(filename) == False:  #如果该照片已经存在则不创建，为了节省程序运行时间
+            with open(filename, 'wb') as f:
+                while True:
+                    try:
+                        opener = urllib.request.build_opener()  #构建简单的opener
+                        #Spider.py中还有另外一中设置header内容的写法
+                        opener.addheaders = [('User-Agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.181 Safari/537.36')]
+                        urllib.request.install_opener(opener)
+                        urllib.request.urlretrieve(self.urlShownPre, filename)  #将照片从远程数据下载到本地
+                        print ('********************download photo shown in page successfully: ', self.urlShownPre)
+                    except Exception as e:
+                        print (item['id'], 'fail + 1', e)
+                        count += 1
+                    else:
+                        count = 0
+                        break
+                #f.write(self.spider.getContent(item['url']))  
+
+    def savePhotoRealNext(self):
+        if self.urlShownNext == None:
+            return
+
+        filename = self.path + '/' + str(self.nextPhotoID) + '_shown' + '.jpg'
+
+        count = 0
+        if CommonFunction.IsPathExist(filename) == False:  #如果该照片已经存在则不创建，为了节省程序运行时间
+            with open(filename, 'wb') as f:
+                while True:
+                    try:
+                        opener = urllib.request.build_opener()  #构建简单的opener
+                        #Spider.py中还有另外一中设置header内容的写法
+                        opener.addheaders = [('User-Agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.181 Safari/537.36')]
+                        urllib.request.install_opener(opener)
+                        urllib.request.urlretrieve(self.urlShownNext, filename)  #将照片从远程数据下载到本地
+                        print ('********************download photo shown in page successfully: ', self.urlShownNext)
+                    except Exception as e:
+                        print (item['id'], 'fail + 1', e)
+                        count += 1
+                    else:
+                        count = 0
+                        break
+                #f.write(self.spider.getContent(item['url']))  
+
     def work(self):
         if self.onlyDownloadPhotoReal == False:
             self.getPhotoDetailList()
             self.savePhotos()
             self.savePhotoComment()
-        else:
-            self.getPhotoRealURL()
-            self.savePhotoReal()
+        else:  
+            filename = self.path + '/' + str(self.curPhotoID) + '_shown' + '.jpg'
+            print ('********************filename of photo: ', filename)
+            if CommonFunction.IsPathExist(filename) == False:  #如果该照片已经存在则不创建，为了节省程序运行时间
+                print ('***********get and download photo: ', filename)
+                self.getPhotoRealURL()
+                self.savePhotoReal()
+                self.savePhotoRealPre()
+                self.savePhotoRealNext()
 
 
 

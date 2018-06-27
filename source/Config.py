@@ -75,6 +75,11 @@ STATUSURL = r'http://status.renren.com/GetSomeomeDoingList.do'
 '''
 PHOTOSURL = r'http://photo.renren.com/photo/%s/photo-%s/v7'
 
+'''
+点击照片弹出的URL
+'''
+POPUPPHOTOURL = r'http://photo.renren.com/photo/%s/album-%s/v7#photo/%s/%s'
+
 #日志列表的URL获得：进入日志主页面，此时在google开发者工具的Network页面中是找不到这个url的，要想获得需要这个url，需要
 #点击日志主页最下面的翻页按钮，或者直接点击另外一页，此时Network就回抓到名字是blog?categoryId开头的条目的包，里面的
 #Request Url就是这个我们需要的URL。

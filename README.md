@@ -82,10 +82,10 @@ CommonFunction.py:
 	Album.py:
 		1 流程跟AlbumManager.py差不多，只是改为获取该相册中的照片列表，并增加了一个捕捉并保存相册评论到本地的部分
 	Photos.py:
-		1 构造URL获取该照片的详细信息，跟AlbumManager.py相同，通过beautifulsoup从返回的html中取得数据，修整以满足json格式之后转换为
-	python的dictionary格式，之后获得照片详细信息
+		1 构造URL获取该照片的详细信息，跟AlbumManager.py相同，通过beautifulsoup从返回的html中取得数据，修整以满足json格式之后转换为python的dictionary格式，之后获得照片详细信息
 		2 保存照片图片到本地：建立一个openner，之后通过照片url将照片从远程数据下载到本地
 		3 保存照片评论到本地：就是将之前保存的照片详细信息中的评论信息写入到本地文件中
+		4 网页显示的照片是通过javascript异步加载而成，通过beautifulsoup无法抓取到，但是这些照片有时候要比beautifulsoup静态抓取的照片链接所下载的要更加清晰，因此也需要捕捉下载这些动态异步加载的图片，方法就是使用headless browser来抓取，headless就是模拟浏览器行为但是不进行网页渲染，而是通过后台程序和命令行来控制。要注意这时候需要重新模拟登陆
 
 日志：
 	BlogManager.py:

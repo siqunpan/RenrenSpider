@@ -19,6 +19,7 @@ class Album:
         self.photoCount = photoCount
         self.path = path
         self.photoList = []
+        self.allPhotosInfo = []
 
     #方法同AlbumManager中的getAllAlbumList()，看那里的注释就好了
     def getPhotoList(self):
@@ -46,6 +47,16 @@ class Album:
                 f.write((u'******评论： ******\n\n').encode('utf-8'))
                 f.write(content)
 
+    def getAllPhotosInfo(self): 
+        '''photoList里面并没有存储该相册全部的照片信息，只暂时显示了部分照片，当进度条拖到下面的时候才会动态加\
+            载剩余图片，而任意一张照片中都有该相册中所有照片的信息，因此需要先从任意一张照片中获得该相册中所有\
+            照片的信息'''
+
+        for item in self.photoList:
+            photos = Photos(self.spider, self.userID, self.albumName, item, self.path, False)
+            self.allPhotosInfo = photos.getAllPhotosInfoInAlbum()
+            break  #通过一张照片的信息就可以在element页面下的html代码中得到该相册所有照片
+
     def savePhotos(self):
         for item in self.photoList:
             photos = Photos(self.spider, self.userID, self.albumName, item, self.path, False)
@@ -53,15 +64,21 @@ class Album:
             break  #通过一张照片的信息就可以在element页面下的html代码中得到该相册所有照片，所以不用遍历每一个照片信息了
 
     def savePhotosShown(self):
-        for item in self.photoList:
-            photos = Photos(self.spider, self.userID, self.albumName, item, self.path, True)
+        for item in self.allPhotosInfo:
+            summary = {}
+            summary['ownerId'] = item['owner']
+            summary['albumId'] = self.albumID
+            summary['photoId'] = str(item['id'])
+            photos = Photos(self.spider, self.userID, self.albumName, summary, self.path, True)
             photos.work()
 
     def work(self):
         self.getPhotoList()
+        print (datetime.datetime.now(), self.albumName, 'is getAllPhotosInfo...........')
+        self.getAllPhotosInfo()
         self.getAlbumComments()
         print (datetime.datetime.now(), self.albumName, 'is downloadinig...')
-        #self.savePhotos()
+        self.savePhotos()
         self.savePhotosShown()
         print (datetime.datetime.now(), self.albumName, 'saves successfully!')    	
 
